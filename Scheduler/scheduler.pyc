@@ -1,0 +1,37 @@
+import schedule
+import time
+import subprocess
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
+def run_tool_wear_prediction():
+    """Runs the tool_wear_prediction.py script."""
+    try:
+        logging.info("Running tool_wear_prediction.py...")
+        subprocess.run(["python", "tool_wear_prediction.py"], check=True)  # Use check=True to raise an exception on error
+        logging.info("tool_wear_prediction.py completed successfully.")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Error running tool_wear_prediction.py: {e}")
+    except FileNotFoundError:
+        logging.error("Error: tool_wear_prediction.py not found.  Make sure it's in the same directory.")
+    except Exception as e:
+        logging.error(f"An unexpected error occurred: {e}")
+
+
+def main():
+    """Schedules the tool wear prediction script to run periodically."""
+    logging.info("Starting scheduler...")
+
+    # Schedule the task to run every hour
+    schedule.every().hour.do(run_tool_wear_prediction)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)  # Check for pending tasks every second
+
+
+if __name__ == "__main__":
+    main()
